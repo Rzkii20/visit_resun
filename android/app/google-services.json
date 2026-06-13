@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "565872993507",
+    "firebase_url": "https://visit-resun-c8723-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "visit-resun-c8723",
+    "storage_bucket": "visit-resun-c8723.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565872993507:android:626556362a4f635d10d1d6",
+        "android_client_info": {
+          "package_name": "com.visitresun"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_gpgZPQw2V3Qkb-AY7Yer7OKxDzm4CqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
