@@ -74,67 +74,101 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppStateProvider>();
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: AppConfig.backgroundColor,
+      backgroundColor: const Color(0xFFF5F5F0),
       body: Stack(
         children: [
-          // Background Gradient Panel
+          // Background Image
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            height: MediaQuery.of(context).size.height * 0.35,
+            height: size.height * 0.4,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+              child: Image.network(
+                'https://images.unsplash.com/photo-1542361345-89ce1f11a43a?auto=format&fit=crop&w=1000&q=80', // Replace with desired image URL or AssetImage
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: AppConfig.primaryColor,
+                  );
+                },
+              ),
+            ),
+          ),
+          
+          // Gradient Overlay
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: size.height * 0.4,
             child: Container(
-              decoration: const BoxDecoration(
-                gradient: AppConfig.primaryGradient,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(40),
-                  bottomRight: Radius.circular(40),
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    const Color(0xFFF5F5F0).withOpacity(1.0),
+                    const Color(0xFFF5F5F0).withOpacity(0.0),
+                  ],
                 ),
               ),
             ),
           ),
+
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 24),
-                  // Header
-                  const Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          'Selamat Datang',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Silakan masuk ke aplikasi Visit Resun',
-                          style: TextStyle(color: Colors.white70, fontSize: 14),
-                        ),
-                      ],
+                  const SizedBox(height: 20),
+                  
+                  // Welcome Text
+                  const Text(
+                    'Selamat Datang',
+                    style: TextStyle(
+                      color: AppConfig.textColorPrimary,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
                     ),
+                    textAlign: TextAlign.left,
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Masuk ke Visit Resun',
+                    style: TextStyle(
+                      color: AppConfig.textColorSecondary,
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  
+                  SizedBox(height: size.height * 0.12),
 
-                  // Login Form Card
+                  // Floating Login Card
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: AppConfig.cardColor,
-                      borderRadius: BorderRadius.circular(28),
+                      color: const Color(0xFFF5F5F0),
+                      borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 24,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
@@ -143,15 +177,54 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const Text(
-                            'Masuk',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppConfig.textColorPrimary,
+                          // Masuk / Daftar Segmented Tab
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    decoration: BoxDecoration(
+                                      color: AppConfig.primaryColor,
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: const Text(
+                                      'Masuk',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(context, AppRoutes.register);
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                      color: Colors.transparent,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Daftar',
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 32),
 
                           // Email Field
                           TextFormField(
@@ -172,13 +245,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Icons.email_outlined,
                                 color: AppConfig.primaryColor,
                               ),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 16),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: Colors.grey.shade300,
+                                  color: Colors.lightGreen.shade200,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
@@ -224,13 +298,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   });
                                 },
                               ),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 16),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(
-                                  color: Colors.grey.shade300,
+                                  color: Colors.lightGreen.shade200,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
@@ -238,6 +313,28 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderSide: const BorderSide(
                                   color: AppConfig.primaryColor,
                                   width: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Lupa Kata Sandi
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {},
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: const Size(50, 30),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: const Text(
+                                'Lupa kata sandi?',
+                                style: TextStyle(
+                                  color: AppConfig.primaryColor,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
@@ -253,52 +350,55 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   ),
                                 )
-                              : ElevatedButton(
-                                  onPressed: _handleLogin,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppConfig.primaryColor,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
+                              : SizedBox(
+                                  height: 55,
+                                  child: ElevatedButton(
+                                    onPressed: _handleLogin,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppConfig.primaryColor,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      elevation: 0,
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    elevation: 2,
-                                  ),
-                                  child: const Text(
-                                    'Masuk Sekarang',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                    child: const Text(
+                                      'Masuk',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
+                          
                           if (!state.isLoading) ...[
-                            const SizedBox(height: 12),
-                            OutlinedButton(
-                              onPressed: () async {
-                                final provider = Provider.of<AppStateProvider>(context, listen: false);
-                                await provider.loginAsGuest();
-                                if (context.mounted) {
-                                  Navigator.pushReplacementNamed(context, AppRoutes.home);
-                                }
-                              },
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppConfig.primaryColor,
-                                side: const BorderSide(color: AppConfig.primaryColor, width: 1.5),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
+                            const SizedBox(height: 16),
+                            
+                            // Guest Login Button
+                            SizedBox(
+                              height: 55,
+                              child: OutlinedButton(
+                                onPressed: () async {
+                                  final provider = Provider.of<AppStateProvider>(context, listen: false);
+                                  await provider.loginAsGuest();
+                                  if (context.mounted) {
+                                    Navigator.pushReplacementNamed(context, AppRoutes.home);
+                                  }
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppConfig.primaryColor,
+                                  side: const BorderSide(color: AppConfig.primaryColor, width: 1.5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                              child: const Text(
-                                'Masuk sebagai Tamu',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                child: const Text(
+                                  'Masuk sebagai Tamu',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
@@ -306,31 +406,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Register Direct
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Belum punya akun? ',
-                        style: TextStyle(color: AppConfig.textColorSecondary),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.register);
-                        },
-                        child: const Text(
-                          'Daftar Sekarang',
-                          style: TextStyle(
-                            color: AppConfig.primaryColor,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                   const SizedBox(height: 24),
                 ],
