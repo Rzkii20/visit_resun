@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../config/app_config.dart';
 import '../providers/app_state_provider.dart';
 import '../routes/app_routes.dart';
+import '../widgets/app_image.dart';
 
 class HomestayScreen extends StatelessWidget {
   const HomestayScreen({super.key});
@@ -89,7 +90,7 @@ class HomestayScreen extends StatelessWidget {
                           // Top Image & Price overlay
                           Stack(
                             children: [
-                              Image.network(
+                              AppImage(
                                 h.gambar,
                                 height: 170,
                                 width: double.infinity,

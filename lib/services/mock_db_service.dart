@@ -6,9 +6,9 @@ import '../models/suvenir_model.dart';
 import 'base_db_service.dart';
 
 class MockDbService implements BaseDbService {
-  static const String _keyWisata = 'mock_wisata_v4';
-  static const String _keyHomestays = 'mock_homestays_v4';
-  static const String _keySuvenirs = 'mock_suvenirs_v4';
+  static const String _keyWisata = 'mock_wisata_v6';
+  static const String _keyHomestays = 'mock_homestays_v6';
+  static const String _keySuvenirs = 'mock_suvenirs_v6';
 
   Future<void> _seedIfEmpty() async {
     final prefs = await SharedPreferences.getInstance();
@@ -21,7 +21,7 @@ class MockDbService implements BaseDbService {
           id: 'w_1',
           nama: 'Air Terjun Resun',
           deskripsi: 'Air terjun alami terindah di Kabupaten Lingga. Memiliki lima tingkatan air terjun dengan kolam alami berair sangat jernih dan sejuk, dikelilingi hutan hujan tropis yang asri. Sangat cocok untuk berenang dan melepas penat.',
-          gambar: 'https://images.unsplash.com/photo-1508459855340-fb63ac591728?q=80&w=600',
+          gambar: 'assets/images/air_terjun_resun.png',
           kategori: 'Tempat Wisata',
           lat: -0.14746797422103605,
           lng: 104.60392575314476,
@@ -34,7 +34,7 @@ class MockDbService implements BaseDbService {
           id: 'w_2',
           nama: 'Tour Mangrove & Kunang-Kunang',
           deskripsi: 'Menelusuri keasrian ekosistem hutan bakau Sungai Resun menggunakan perahu kayu tradisional milik nelayan setempat. Nikmati kesejukan udara, suara burung langka, pemandangan sunset mangrove, dan pertunjukan jutaan kunang-kunang di malam hari.',
-          gambar: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=600',
+          gambar: 'assets/images/wisata_mangrove_resun.png',
           kategori: 'Tempat Wisata',
           lat: -0.12848976817640548,
           lng: 104.61745140167176,
@@ -47,7 +47,7 @@ class MockDbService implements BaseDbService {
           id: 'w_3',
           nama: 'Sungai Kem',
           deskripsi: 'Sungai jernih alami di Desa Resun yang menyajikan keindahan ekosistem air tawar tropis, dikelilingi vegetasi rimbun yang asri. Sangat ideal untuk wisata susur sungai, bermain air, dan bersantai menikmati suasana pedesaan yang sejuk.',
-          gambar: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600',
+          gambar: 'assets/images/sungai_kim_resun.png',
           kategori: 'Tempat Wisata',
           lat: -0.13696218741310473,
           lng: 104.60919850419728,
@@ -152,7 +152,7 @@ class MockDbService implements BaseDbService {
           lat: -0.146500,
           lng: 104.604200,
           rating: 4.8,
-          kontak: '628123456789',
+          kontak: '6282268875837',
         ),
         HomestayModel(
           id: 'h_2',
@@ -163,7 +163,7 @@ class MockDbService implements BaseDbService {
           lat: -0.148000,
           lng: 104.602500,
           rating: 4.6,
-          kontak: '628987654321',
+          kontak: '6282268875837',
         ),
         HomestayModel(
           id: 'h_3',
@@ -174,7 +174,7 @@ class MockDbService implements BaseDbService {
           lat: -0.145800,
           lng: 104.605100,
           rating: 4.7,
-          kontak: '628112233445',
+          kontak: '6282268875837',
         ),
       ];
       await prefs.setString(_keyHomestays, json.encode(initialHomestays.map((e) => e.toMap()).toList()));
@@ -191,7 +191,7 @@ class MockDbService implements BaseDbService {
           deskripsi: 'Kue kering tradisional khas Kabupaten Lingga dengan cita rasa gurih manis bertabur wijen yang diolah secara turun-temurun oleh masyarakat Desa Resun. Sangat lezat dipadukan dengan teh hangat.',
           rating: 4.9,
           stok: 40,
-          kontak: '628123456789',
+          kontak: '6282268875837',
         ),
         SuvenirModel(
           id: 's_2',
@@ -211,7 +211,7 @@ class MockDbService implements BaseDbService {
           deskripsi: 'Mie sagu khas Melayu yang diproses langsung dari sagu pohon asli Desa Resun. Disajikan kering atau kuah ikan bumbu kari yang pedas gurih nan menggugah selera.',
           rating: 4.8,
           stok: 30,
-          kontak: '628112233445',
+          kontak: '6282268875837',
         ),
         SuvenirModel(
           id: 's_4',
@@ -241,7 +241,7 @@ class MockDbService implements BaseDbService {
           deskripsi: 'Tas rajut, gantungan kunci, dan aksesoris kerajinan rajutan buatan tangan ibu-ibu kreatif Desa Resun. Setiap produk bersifat unik dan ramah lingkungan.',
           rating: 4.8,
           stok: 12,
-          kontak: '628112233445',
+          kontak: '6282268875837',
         ),
       ];
       await prefs.setString(_keySuvenirs, json.encode(initialSuvenirs.map((e) => e.toMap()).toList()));

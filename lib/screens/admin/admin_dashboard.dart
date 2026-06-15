@@ -6,6 +6,7 @@ import '../../models/homestay_model.dart';
 import '../../models/suvenir_model.dart';
 import '../../providers/app_state_provider.dart';
 import '../../routes/app_routes.dart';
+import '../../widgets/app_image.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -359,7 +360,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               // Circular Image Preview
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
+                child: AppImage(
                   image,
                   width: 55,
                   height: 55,

@@ -4,6 +4,7 @@ import '../config/app_config.dart';
 import '../providers/app_state_provider.dart';
 import '../routes/app_routes.dart';
 import '../models/wisata_model.dart';
+import '../widgets/app_image.dart';
 
 class WisataTab extends StatefulWidget {
   const WisataTab({super.key});
@@ -213,7 +214,7 @@ class _WisataTabState extends State<WisataTab> {
               // Left Image
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
+                child: AppImage(
                   w.gambar,
                   width: 96,
                   height: 96,

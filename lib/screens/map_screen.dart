@@ -7,6 +7,7 @@ import '../models/wisata_model.dart';
 import '../models/homestay_model.dart';
 import '../providers/app_state_provider.dart';
 import '../routes/app_routes.dart';
+import '../widgets/app_image.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -219,7 +220,7 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                   const SizedBox(width: 16),
                   const Text(
-                    'Peta Geografis (GIS)',
+                    'Peta Geografis',
                     style: TextStyle(
                       fontFamily: 'serif',
                       color: Colors.white,
@@ -278,7 +279,7 @@ class _MapScreenState extends State<MapScreen> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
+                      child: AppImage(
                         _selectedItem.gambar,
                         width: 86,
                         height: 86,

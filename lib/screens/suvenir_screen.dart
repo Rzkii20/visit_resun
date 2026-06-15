@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../config/app_config.dart';
 import '../providers/app_state_provider.dart';
 import '../routes/app_routes.dart';
+import '../widgets/app_image.dart';
 
 class SuvenirScreen extends StatelessWidget {
   const SuvenirScreen({super.key});
@@ -96,7 +97,7 @@ class SuvenirScreen extends StatelessWidget {
                             child: Stack(
                               children: [
                                 Positioned.fill(
-                                  child: Image.network(
+                                  child: AppImage(
                                     s.gambar,
                                     fit: BoxFit.cover,
                                     errorBuilder: (context, error, stackTrace) => Container(

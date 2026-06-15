@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_config.dart';
 import '../models/user_model.dart';
 import '../models/wisata_model.dart';
@@ -207,25 +208,31 @@ class AppStateProvider extends ChangeNotifier {
         final fileName = '${DateTime.now().millisecondsSinceEpoch}.$extension';
         final ref = FirebaseStorage.instance.ref().child('$folder/$fileName');
         
-        await ref.putData(bytes);
+        final metadata = SettableMetadata(contentType: 'image/${extension.toLowerCase() == 'jpg' ? 'jpeg' : extension}');
+        await ref.putData(bytes, metadata);
         return await ref.getDownloadURL();
       } catch (e) {
-        debugPrint('Error uploading image: $e');
-        throw Exception('Gagal mengunggah gambar: $e');
+        debugPrint('Error uploading image to Firebase: $e. Falling back to local base64.');
+        return _fallbackToBase64(file);
       }
     } else {
-      try {
-        final bytes = await file.readAsBytes();
-        final base64String = base64Encode(bytes);
-        final extension = file.name.split('.').last.toLowerCase();
-        final mimeType = (extension == 'png') ? 'image/png' : 'image/jpeg';
-        return 'data:$mimeType;base64,$base64String';
-      } catch (e) {
-        debugPrint('Error loading local image: $e');
-        return 'https://images.unsplash.com/photo-1508459855340-fb63ac591728?q=80&w=600';
-      }
+      return _fallbackToBase64(file);
     }
   }
+
+  Future<String> _fallbackToBase64(XFile file) async {
+    try {
+      final bytes = await file.readAsBytes();
+      final base64String = base64Encode(bytes);
+      final extension = file.name.split('.').last.toLowerCase();
+      final mimeType = (extension == 'png') ? 'image/png' : 'image/jpeg';
+      return 'data:$mimeType;base64,$base64String';
+    } catch (e) {
+      debugPrint('Error loading local image: $e');
+      return 'https://images.unsplash.com/photo-1508459855340-fb63ac591728?q=80&w=600';
+    }
+  }
+
 
   Future<void> updateProfilePhoto(XFile file) async {
     _setLoading(true);
@@ -246,6 +253,50 @@ class AppStateProvider extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error updating profile photo: $e');
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> updateUserName(String newName) async {
+    _setLoading(true);
+    try {
+      if (AppConfig.useFirebase) {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          await user.updateDisplayName(newName);
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).set({'name': newName}, SetOptions(merge: true));
+        }
+      } else {
+        // Update in SharedPreferences (mock auth)
+        final prefs = await SharedPreferences.getInstance();
+        final usersStr = prefs.getString('all_users');
+        if (usersStr != null) {
+          final List<dynamic> usersList = json.decode(usersStr);
+          for (int i = 0; i < usersList.length; i++) {
+            final map = Map<String, dynamic>.from(usersList[i]);
+            if (map['uid'] == _currentUser?.uid) {
+              map['name'] = newName;
+              usersList[i] = map;
+              break;
+            }
+          }
+          await prefs.setString('all_users', json.encode(usersList));
+        }
+        // Update current_user cache
+        if (_currentUser != null) {
+          final updated = _currentUser!.copyWith(name: newName);
+          await prefs.setString('current_user', json.encode(updated.toMap()));
+        }
+      }
+
+      if (_currentUser != null) {
+        _currentUser = _currentUser!.copyWith(name: newName);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error updating user name: $e');
       rethrow;
     } finally {
       _setLoading(false);

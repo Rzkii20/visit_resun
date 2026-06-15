@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/app_config.dart';
+import 'app_image.dart';
 
 class ItemCard extends StatelessWidget {
   final String title;
@@ -48,7 +49,7 @@ class ItemCard extends StatelessWidget {
             children: [
               // Background Image with elegant error/loading handling
               Positioned.fill(
-                child: Image.network(
+                child: AppImage(
                   imageUrl,
                   fit: BoxFit.cover,
                   loadingBuilder: (context, child, loadingProgress) {

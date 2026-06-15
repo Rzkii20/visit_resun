@@ -6,6 +6,7 @@ import '../../models/wisata_model.dart';
 import '../../models/homestay_model.dart';
 import '../../models/suvenir_model.dart';
 import '../../providers/app_state_provider.dart';
+import '../../widgets/app_image.dart';
 
 class AdminFormScreen extends StatefulWidget {
   const AdminFormScreen({super.key});
@@ -326,7 +327,7 @@ class _AdminFormScreenState extends State<AdminFormScreen> {
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
-                                child: Image.network(
+                                child: AppImage(
                                   _gambarController.text,
                                   height: 180,
                                   width: double.infinity,

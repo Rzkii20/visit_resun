@@ -6,6 +6,7 @@ import '../routes/app_routes.dart';
 import '../screens/main_shell.dart';
 import '../widgets/item_card.dart';
 import '../models/wisata_model.dart';
+import '../widgets/app_image.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -107,23 +108,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: CircleAvatar(
                         radius: 24,
                         backgroundColor: AppConfig.primaryColor,
-                        backgroundImage: (user != null && user.photo.isNotEmpty)
-                            ? NetworkImage(user.photo)
-                            : null,
-                        child: (user == null || user.photo.isEmpty)
-                            ? Text(
-                                state.isAdmin
-                                    ? 'A'
-                                    : (user != null && user.name.isNotEmpty)
-                                        ? user.name[0].toUpperCase()
-                                        : 'P',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : null,
+                        child: Text(
+                          state.isAdmin
+                              ? 'A'
+                              : (user != null && user.name.isNotEmpty)
+                                  ? user.name[0].toUpperCase()
+                                  : 'P',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ),

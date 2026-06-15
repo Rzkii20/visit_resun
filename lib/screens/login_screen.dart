@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../config/app_config.dart';
 import '../providers/app_state_provider.dart';
 import '../routes/app_routes.dart';
+import '../widgets/app_image.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -91,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
               ),
-              child: Image.network(
+              child: AppImage(
                 'https://images.unsplash.com/photo-1542361345-89ce1f11a43a?auto=format&fit=crop&w=1000&q=80', // Replace with desired image URL or AssetImage
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {

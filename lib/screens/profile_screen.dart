@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
 import '../config/app_config.dart';
 import '../providers/app_state_provider.dart';
 import '../routes/app_routes.dart';
@@ -18,6 +17,82 @@ class ProfileScreen extends StatelessWidget {
         (route) => false,
       );
     }
+  }
+
+  void _showEditNameDialog(BuildContext context, String currentName) {
+    final controller = TextEditingController(text: currentName);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Ubah Nama',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: AppConfig.textColorPrimary,
+          ),
+        ),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          decoration: InputDecoration(
+            labelText: 'Nama Baru',
+            hintText: 'Masukkan nama baru',
+            prefixIcon: const Icon(Icons.person_rounded, color: AppConfig.primaryColor),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: AppConfig.primaryColor, width: 2),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Batal', style: TextStyle(color: AppConfig.textColorSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final newName = controller.text.trim();
+              if (newName.isNotEmpty && newName != currentName) {
+                Navigator.pop(ctx);
+                try {
+                  final provider = Provider.of<AppStateProvider>(context, listen: false);
+                  await provider.updateUserName(newName);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Nama berhasil diperbarui!'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Gagal memperbarui nama: $e'),
+                        backgroundColor: Colors.redAccent,
+                      ),
+                    );
+                  }
+                }
+              } else {
+                Navigator.pop(ctx);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppConfig.primaryColor,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Simpan'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -73,80 +148,61 @@ class ProfileScreen extends StatelessWidget {
                     backgroundColor: state.isAdmin
                         ? Colors.amber.shade600
                         : (state.isGuest ? Colors.grey.shade400 : AppConfig.primaryColor),
-                    backgroundImage: (user != null && user.photo.isNotEmpty && !state.isGuest)
-                        ? NetworkImage(user.photo)
-                        : null,
-                    child: (user == null || user.photo.isEmpty || state.isGuest)
-                        ? Text(
-                            state.isAdmin
-                                ? 'A'
-                                : (state.isGuest ? 'T' : ((user != null && user.name.isNotEmpty) ? user.name[0].toUpperCase() : 'P')),
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          )
-                        : null,
-                  ),
-                  if (!state.isGuest) ...[
-                    const SizedBox(height: 8),
-                    Center(
-                      child: TextButton.icon(
-                        onPressed: () async {
-                          final picker = ImagePicker();
-                          final image = await picker.pickImage(source: ImageSource.gallery);
-                          if (image != null) {
-                            try {
-                              final scaffoldMessenger = ScaffoldMessenger.of(context);
-                              scaffoldMessenger.showSnackBar(
-                                const SnackBar(
-                                  content: Text('Mengunggah foto profil...'),
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
-                              final provider = Provider.of<AppStateProvider>(context, listen: false);
-                              await provider.updateProfilePhoto(image);
-                              scaffoldMessenger.showSnackBar(
-                                const SnackBar(
-                                  content: Text('Foto profil berhasil diperbarui!'),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Gagal memperbarui foto profil: $e'),
-                                    backgroundColor: Colors.redAccent,
-                                  ),
-                                );
-                              }
-                            }
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppConfig.primaryColor,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        ),
-                        icon: const Icon(Icons.photo_camera_rounded, size: 18),
-                        label: const Text(
-                          'Ubah Foto Profil',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                        ),
+                    child: Text(
+                      state.isAdmin
+                          ? 'A'
+                          : (state.isGuest ? 'T' : ((user != null && user.name.isNotEmpty) ? user.name[0].toUpperCase() : 'P')),
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
-                  ],
-                  const SizedBox(height: 16),
-                  Text(
-                    user?.name ?? 'Pengunjung',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppConfig.textColorPrimary,
-                    ),
                   ),
+                  const SizedBox(height: 16),
+                  if (!state.isGuest)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            user?.name ?? 'Pengunjung',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppConfig.textColorPrimary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        GestureDetector(
+                          onTap: () => _showEditNameDialog(context, user?.name ?? ''),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: AppConfig.primaryColor.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.edit_rounded,
+                              size: 16,
+                              color: AppConfig.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (state.isGuest)
+                    const Text(
+                      'Pengunjung',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppConfig.textColorPrimary,
+                      ),
+                    ),
                   const SizedBox(height: 6),
                   Text(
                     user?.email ?? 'pengunjung@visitresun.com',

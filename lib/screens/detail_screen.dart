@@ -5,6 +5,7 @@ import '../models/wisata_model.dart';
 import '../models/homestay_model.dart';
 import '../models/suvenir_model.dart';
 import '../routes/app_routes.dart';
+import '../widgets/app_image.dart';
 
 class DetailScreen extends StatefulWidget {
   const DetailScreen({super.key});
@@ -139,7 +140,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     height: 340,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: NetworkImage(imageUrl),
+                        image: getAppImageProvider(imageUrl),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -491,36 +492,6 @@ class _DetailScreenState extends State<DetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Row(
-            children: [
-              Icon(Icons.pin_drop_rounded, color: AppConfig.primaryColor, size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Koordinat Geografis (GIS)',
-                style: TextStyle(
-                  fontFamily: 'serif',
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppConfig.textColorPrimary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Lat: ${lat.toStringAsFixed(6)}',
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppConfig.textColorSecondary),
-              ),
-              Text(
-                'Lng: ${lng.toStringAsFixed(6)}',
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppConfig.textColorSecondary),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
           ElevatedButton(
             onPressed: () {
               Navigator.pushNamed(
@@ -535,7 +506,7 @@ class _DetailScreenState extends State<DetailScreen> {
               elevation: 0,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('Tampilkan di Peta GIS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            child: const Text('Tampilkan Di Peta', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
