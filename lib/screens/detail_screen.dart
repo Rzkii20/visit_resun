@@ -6,8 +6,15 @@ import '../models/homestay_model.dart';
 import '../models/suvenir_model.dart';
 import '../routes/app_routes.dart';
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   const DetailScreen({super.key});
+
+  @override
+  State<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  bool _isFavorite = false;
 
   Future<void> _openWhatsApp(BuildContext context, String number, String itemName) async {
     final message = Uri.encodeComponent('Halo, saya tertarik dengan "$itemName" di aplikasi Visit Resun.');
@@ -33,7 +40,6 @@ class DetailScreen extends StatelessWidget {
     final String type = args['type']; // 'wisata', 'homestay', 'suvenir'
     final dynamic item = args['data'];
 
-    // Pre-cast items at the top of build to avoid inside-list statement declarations!
     final w = type == 'wisata' ? item as WisataModel : null;
     final h = type == 'homestay' ? item as HomestayModel : null;
     final s = type == 'suvenir' ? item as SuvenirModel : null;
@@ -42,41 +48,95 @@ class DetailScreen extends StatelessWidget {
     String imageUrl = '';
     String description = '';
     double rating = 4.0;
-    String badgeText = '';
+    String tagLabel = '';
+    
+    // 3 Cards info data
+    IconData infoIcon1 = Icons.info;
+    String infoLabel1 = '';
+    String infoVal1 = '';
+
+    IconData infoIcon2 = Icons.info;
+    String infoLabel2 = '';
+    String infoVal2 = '';
+
+    IconData infoIcon3 = Icons.info;
+    String infoLabel3 = '';
+    String infoVal3 = '';
 
     if (type == 'wisata') {
       title = w!.nama;
       imageUrl = w.gambar;
       description = w.deskripsi;
       rating = w.rating;
-      badgeText = w.kategori;
+      tagLabel = w.isPaket ? 'Paket Wisata' : w.kategori;
+
+      infoIcon1 = Icons.access_time_rounded;
+      infoLabel1 = 'Jam Buka';
+      infoVal1 = w.jamBuka;
+
+      infoIcon2 = Icons.pin_drop_rounded;
+      infoLabel2 = 'GIS Peta';
+      infoVal2 = w.isPaket ? 'No GPS' : '${w.lat.toStringAsFixed(3)}, ${w.lng.toStringAsFixed(3)}';
+
+      infoIcon3 = Icons.confirmation_number_rounded;
+      infoLabel3 = 'Tiket';
+      infoVal3 = w.tiketMasuk;
     } else if (type == 'homestay') {
       title = h!.nama;
       imageUrl = h.gambar;
-      description = 'Tempat menginap yang nyaman dan ramah lingkungan di Desa Resun. Nikmati keramahan penduduk lokal dan kebudayaan Melayu yang kental selama Anda menginap di sini.';
+      description = 'Nikmati ketenangan dan kenyamanan menginap di homestay Desa Wisata Resun. Tempat ideal untuk beristirahat bersama keluarga sambil menikmati alam pedesaan yang sejuk dan asri.';
       rating = h.rating;
-      badgeText = 'Rp ${h.harga.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}/malam';
+      tagLabel = 'Penginapan';
+
+      infoIcon1 = Icons.payments_rounded;
+      infoLabel1 = 'Harga';
+      infoVal1 = 'Rp ${h.harga.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}';
+
+      infoIcon2 = Icons.star_rounded;
+      infoLabel2 = 'Rating';
+      infoVal2 = '${h.rating.toStringAsFixed(1)} / 5.0';
+
+      infoIcon3 = Icons.checklist_rounded;
+      infoLabel3 = 'Fasilitas';
+      infoVal3 = '${h.fasilitas.length} Fitur';
     } else if (type == 'suvenir') {
       title = s!.nama;
       imageUrl = s.gambar;
       description = s.deskripsi;
       rating = s.rating;
-      badgeText = 'Rp ${s.harga.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}';
+      tagLabel = 'Suvenir / Produk';
+
+      infoIcon1 = Icons.payments_rounded;
+      infoLabel1 = 'Harga';
+      infoVal1 = 'Rp ${s.harga.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}';
+
+      infoIcon2 = Icons.inventory_rounded;
+      infoLabel2 = 'Stok';
+      infoVal2 = s.stok > 0 ? '${s.stok} unit' : 'Habis';
+
+      infoIcon3 = Icons.star_rounded;
+      infoLabel3 = 'Rating';
+      infoVal3 = '${s.rating.toStringAsFixed(1)} / 5.0';
     }
+
+    final isBudaya = tagLabel.toLowerCase() == 'budaya' || tagLabel.toLowerCase() == 'sejarah';
+    final tagBg = isBudaya ? AppConfig.tagBudayaBg : AppConfig.tagAlamBg;
+    final tagText = isBudaya ? AppConfig.tagBudayaText : AppConfig.tagAlamText;
 
     return Scaffold(
       backgroundColor: AppConfig.backgroundColor,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Image Header Panel
+            // Top Image Panel with floating pill
             Stack(
               children: [
                 Hero(
                   tag: 'img_${item.id}',
                   child: Container(
-                    height: 320,
+                    height: 340,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: NetworkImage(imageUrl),
@@ -85,116 +145,187 @@ class DetailScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Soft gradient protection on image
                 Container(
-                  height: 320,
+                  height: 340,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.4),
+                        Colors.black.withOpacity(0.35),
                         Colors.transparent,
-                        Colors.black.withOpacity(0.2),
+                        Colors.black.withOpacity(0.15),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
                   ),
                 ),
-                // Navigation Floating Back Button
+                // Back Button & Favorite Button
                 SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: CircleAvatar(
-                      backgroundColor: Colors.black45,
-                      foregroundColor: Colors.white,
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-                        onPressed: () => Navigator.pop(context),
-                      ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppConfig.textColorPrimary,
+                          radius: 20,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 16),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ),
+                        CircleAvatar(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.redAccent,
+                          radius: 20,
+                          child: IconButton(
+                            icon: Icon(
+                              _isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isFavorite = !_isFavorite;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Floating Rating Badge Pill over Image
+                Positioned(
+                  bottom: 46,
+                  right: 20,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.star_rounded, color: AppConfig.accentColor, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          rating.toStringAsFixed(1),
+                          style: const TextStyle(
+                            color: AppConfig.textColorPrimary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '(4.8)', // Mock review average count
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
 
-            // Content Panel
+            // Content Panel (Translate upward slightly to overlap image)
             Transform.translate(
               offset: const Offset(0, -30),
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: const BoxDecoration(
-                  color: AppConfig.cardColor,
+                  color: Colors.white,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(36),
-                    topRight: Radius.circular(36),
+                    topLeft: Radius.circular(32),
+                    topRight: Radius.circular(32),
                   ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title & Badge Row
+                    // Title and tag row
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: Text(
                             title,
                             style: const TextStyle(
-                              fontSize: 22,
+                              fontFamily: 'serif',
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: AppConfig.textColorPrimary,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 12),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: AppConfig.primaryColor,
-                            borderRadius: BorderRadius.circular(12),
+                            color: tagBg,
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            badgeText,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
+                            tagLabel,
+                            style: TextStyle(
+                              color: tagText,
+                              fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    
+                    // Location Subtitle
+                    if (type == 'wisata' && !w!.isPaket) ...[
+                      const SizedBox(height: 8),
+                      const Row(
+                        children: [
+                          Icon(Icons.pin_drop_rounded, size: 14, color: AppConfig.primaryColor),
+                          SizedBox(width: 4),
+                          Text(
+                            'Desa Wisata Resun, Kabupaten Lingga',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: AppConfig.textColorSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 20),
 
-                    // Rating Row
+                    // 3-Card info row
                     Row(
                       children: [
-                        const Icon(Icons.star_rounded, color: AppConfig.accentColor, size: 20),
-                        const SizedBox(width: 4),
-                        Text(
-                          rating.toStringAsFixed(1),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: AppConfig.textColorPrimary,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Text(
-                          '(Ulasan Wisatawan)',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppConfig.textColorSecondary,
-                          ),
-                        ),
+                        _buildInfoCard(infoIcon1, infoLabel1, infoVal1),
+                        const SizedBox(width: 10),
+                        _buildInfoCard(infoIcon2, infoLabel2, infoVal2),
+                        const SizedBox(width: 10),
+                        _buildInfoCard(infoIcon3, infoLabel3, infoVal3),
                       ],
                     ),
                     const SizedBox(height: 24),
 
+                    // Description
                     const Text(
-                      'Deskripsi Lengkap',
+                      'Deskripsi Wisata',
                       style: TextStyle(
+                        fontFamily: 'serif',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppConfig.textColorPrimary,
@@ -211,103 +342,96 @@ class DetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Adaptable Sections based on Type
-                    if (type == 'wisata') ...[
-                      // Wisata specific info
-                      const Text(
-                        'Informasi Kunjungan',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppConfig.textColorPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildInfoRow(Icons.access_time_rounded, 'Jam Buka', (item as WisataModel).jamBuka),
-                      _buildInfoRow(Icons.confirmation_num_outlined, 'Tiket Masuk', item.tiketMasuk),
-                      const SizedBox(height: 24),
-
-                      // GIS Location Card
-                      _buildGisCard(context, item.lat, item.lng, title, item.id),
+                    // Specialized interactive widgets per type
+                    if (type == 'wisata' && w != null && !w.isPaket) ...[
+                      _buildCoordinatesInfo(context, w.lat, w.lng, w.nama, w.id),
                     ] else if (type == 'homestay' && h != null) ...[
-                      // Homestay specific info
                       const Text(
-                        'Fasilitas Homestay',
+                        'Fasilitas Lengkap',
                         style: TextStyle(
+                          fontFamily: 'serif',
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: AppConfig.textColorPrimary,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
                         children: h.fasilitas.map((f) {
                           return Chip(
-                            label: Text(f, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-                            backgroundColor: AppConfig.primaryColor.withOpacity(0.06),
-                            side: BorderSide(color: AppConfig.primaryColor.withOpacity(0.15)),
+                            label: Text(
+                              f,
+                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppConfig.textColorPrimary),
+                            ),
+                            backgroundColor: AppConfig.backgroundColor,
+                            elevation: 0,
+                            side: BorderSide(color: Colors.grey.shade300),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            labelPadding: const EdgeInsets.symmetric(horizontal: 4),
                           );
                         }).toList(),
                       ),
                       const SizedBox(height: 24),
-
-                      // GIS Location Card
-                      _buildGisCard(context, h.lat, h.lng, title, h.id),
+                      _buildCoordinatesInfo(context, h.lat, h.lng, h.nama, h.id),
                       const SizedBox(height: 24),
-
-                      // Order/Booking button
-                      ElevatedButton(
-                        onPressed: () => _openWhatsApp(context, h.kontak, h.nama),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                      // Booking Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => _openWhatsApp(context, h.kontak, h.nama),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green.shade600,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
-                          elevation: 2,
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.chat_rounded),
-                            SizedBox(width: 8),
-                            Text('Hubungi Pemilik (Booking)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                          ],
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.chat_rounded, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Hubungi Pemilik via WhatsApp',
+                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ] else if (type == 'suvenir' && s != null) ...[
-                      // Suvenir specific info
-                      _buildInfoRow(Icons.inventory_2_outlined, 'Status Ketersediaan', s.stok > 0 ? '${s.stok} unit tersedia' : 'Stok habis'),
-                      const SizedBox(height: 24),
-
-                      // Order button
-                      ElevatedButton(
-                        onPressed: () => _openWhatsApp(context, s.kontak, s.nama),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppConfig.primaryColor,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                      // Order Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => _openWhatsApp(context, s.kontak, s.nama),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppConfig.primaryColor,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
-                          elevation: 2,
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.shopping_bag_outlined),
-                            SizedBox(width: 8),
-                            Text('Pesan via WhatsApp', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                          ],
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.shopping_bag_outlined, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Pesan via WhatsApp Sekarang',
+                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),
@@ -318,60 +442,66 @@ class DetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppConfig.primaryColor.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(10),
+  Widget _buildInfoCard(IconData icon, String label, String value) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: AppConfig.sageGreen,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: AppConfig.primaryColor, size: 20),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppConfig.textColorSecondary,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            child: Icon(icon, color: AppConfig.primaryColor, size: 18),
-          ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(fontSize: 11, color: AppConfig.textColorSecondary, fontWeight: FontWeight.bold),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: AppConfig.primaryColor,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: const TextStyle(fontSize: 13, color: AppConfig.textColorPrimary, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildGisCard(BuildContext context, double lat, double lng, String name, String id) {
+  Widget _buildCoordinatesInfo(BuildContext context, double lat, double lng, String name, String id) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.shade50,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.red.shade100, width: 1),
+        color: AppConfig.backgroundColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade300),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
+          const Row(
             children: [
-              const Icon(Icons.pin_drop_rounded, color: Colors.red, size: 22),
-              const SizedBox(width: 8),
-              const Text(
-                'Koordinat Lokasi (GIS)',
+              Icon(Icons.pin_drop_rounded, color: AppConfig.primaryColor, size: 20),
+              SizedBox(width: 8),
+              Text(
+                'Koordinat Geografis (GIS)',
                 style: TextStyle(
+                  fontFamily: 'serif',
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.red,
+                  color: AppConfig.textColorPrimary,
                 ),
               ),
             ],
@@ -381,16 +511,16 @@ class DetailScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Latitude: ${lat.toStringAsFixed(6)}',
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppConfig.textColorPrimary),
+                'Lat: ${lat.toStringAsFixed(6)}',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppConfig.textColorSecondary),
               ),
               Text(
-                'Longitude: ${lng.toStringAsFixed(6)}',
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppConfig.textColorPrimary),
+                'Lng: ${lng.toStringAsFixed(6)}',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppConfig.textColorSecondary),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           ElevatedButton(
             onPressed: () {
               Navigator.pushNamed(
@@ -400,12 +530,12 @@ class DetailScreen extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppConfig.primaryColor,
               foregroundColor: Colors.white,
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('Buka di Peta GIS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            child: const Text('Tampilkan di Peta GIS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

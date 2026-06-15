@@ -74,7 +74,7 @@ class _MapScreenState extends State<MapScreen> {
     // 1. Add Wisata markers (Green Pins)
     if (_activeFilter == 'semua' || _activeFilter == 'wisata') {
       for (var w in state.wisataList) {
-        if (w.isPaket) continue; // Skip Packages on the GIS map since they don't have spatial coordinates
+        if (w.isPaket) continue;
         markers.add(
           Marker(
             point: LatLng(w.lat, w.lng),
@@ -92,10 +92,10 @@ class _MapScreenState extends State<MapScreen> {
                 alignment: Alignment.center,
                 children: [
                   Container(
-                    width: 38,
-                    height: 38,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
-                      color: AppConfig.primaryColor.withOpacity(0.3),
+                      color: AppConfig.primaryColor.withOpacity(0.25),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -109,7 +109,7 @@ class _MapScreenState extends State<MapScreen> {
                     child: Icon(
                       Icons.forest_rounded,
                       color: Colors.white,
-                      size: 14,
+                      size: 13,
                     ),
                   ),
                 ],
@@ -120,7 +120,7 @@ class _MapScreenState extends State<MapScreen> {
       }
     }
 
-    // 2. Add Homestay markers (Blue Pins)
+    // 2. Add Homestay markers (Teal/Dark pins to coordinate with green theme)
     if (_activeFilter == 'semua' || _activeFilter == 'homestay') {
       for (var h in state.homestayList) {
         markers.add(
@@ -140,16 +140,16 @@ class _MapScreenState extends State<MapScreen> {
                 alignment: Alignment.center,
                 children: [
                   Container(
-                    width: 38,
-                    height: 38,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
-                      color: Colors.blueAccent.withOpacity(0.3),
+                      color: Colors.teal.withOpacity(0.25),
                       shape: BoxShape.circle,
                     ),
                   ),
                   const Icon(
                     Icons.location_on_rounded,
-                    color: Colors.blueAccent,
+                    color: Colors.teal,
                     size: 38,
                   ),
                   const Positioned(
@@ -157,7 +157,7 @@ class _MapScreenState extends State<MapScreen> {
                     child: Icon(
                       Icons.holiday_village_rounded,
                       color: Colors.white,
-                      size: 14,
+                      size: 13,
                     ),
                   ),
                 ],
@@ -171,7 +171,7 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // The Interactive Map
+          // Interactive Map
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
@@ -192,16 +192,16 @@ class _MapScreenState extends State<MapScreen> {
             ],
           ),
 
-          // Top Banner Header
+          // Top Header
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Container(
-              padding: const EdgeInsets.only(top: 48, bottom: 16, left: 16, right: 16),
+              padding: const EdgeInsets.only(top: 54, bottom: 20, left: 20, right: 20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                  colors: [Colors.black.withOpacity(0.5), Colors.transparent],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -211,8 +211,9 @@ class _MapScreenState extends State<MapScreen> {
                   CircleAvatar(
                     backgroundColor: Colors.white,
                     foregroundColor: AppConfig.primaryColor,
+                    radius: 20,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 16),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
@@ -220,6 +221,7 @@ class _MapScreenState extends State<MapScreen> {
                   const Text(
                     'Peta Geografis (GIS)',
                     style: TextStyle(
+                      fontFamily: 'serif',
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -233,64 +235,63 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
 
-          // Category Filter Bar (Floating Tabs)
+          // Category Filter Chips
           Positioned(
-            top: 110,
-            left: 16,
-            right: 16,
+            top: 116,
+            left: 20,
+            right: 20,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
               child: Row(
                 children: [
-                  _buildFilterChip('semua', 'Semua Pin', Icons.pin_drop),
+                  _buildFilterChip('semua', 'Semua Pin', Icons.pin_drop_rounded),
                   const SizedBox(width: 8),
-                  _buildFilterChip('wisata', 'Wisata (Hijau)', Icons.forest, color: AppConfig.primaryColor),
+                  _buildFilterChip('wisata', 'Wisata (Hijau)', Icons.forest_rounded, color: AppConfig.primaryColor),
                   const SizedBox(width: 8),
-                  _buildFilterChip('homestay', 'Homestay (Biru)', Icons.holiday_village, color: Colors.blueAccent),
+                  _buildFilterChip('homestay', 'Homestay (Teal)', Icons.holiday_village_rounded, color: Colors.teal),
                 ],
               ),
             ),
           ),
 
-          // Bottom Popup Card for Selected Pin
+          // Popup Details Card
           if (_selectedItem != null)
             Positioned(
               bottom: 24,
-              left: 16,
-              right: 16,
+              left: 20,
+              right: 20,
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 15,
+                      offset: const Offset(0, 6),
                     ),
                   ],
                 ),
                 child: Row(
                   children: [
-                    // Item Image
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                       child: Image.network(
                         _selectedItem.gambar,
-                        width: 90,
-                        height: 90,
+                        width: 86,
+                        height: 86,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => Container(
-                          width: 90,
-                          height: 90,
+                          width: 86,
+                          height: 86,
                           color: AppConfig.primaryColor,
                           child: const Icon(Icons.broken_image, color: Colors.white),
                         ),
                       ),
                     ),
                     const SizedBox(width: 16),
-                    // Item Information
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,17 +305,17 @@ class _MapScreenState extends State<MapScreen> {
                                 decoration: BoxDecoration(
                                   color: _selectedType == 'wisata'
                                       ? AppConfig.primaryColor.withOpacity(0.1)
-                                      : Colors.blue.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
+                                      : Colors.teal.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
                                   _selectedType == 'wisata' ? 'Wisata' : 'Homestay',
                                   style: TextStyle(
-                                    fontSize: 10,
+                                    fontSize: 9,
                                     fontWeight: FontWeight.bold,
                                     color: _selectedType == 'wisata'
                                         ? AppConfig.primaryColor
-                                        : Colors.blueAccent,
+                                        : Colors.teal,
                                   ),
                                 ),
                               ),
@@ -337,7 +338,8 @@ class _MapScreenState extends State<MapScreen> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontSize: 15,
+                              fontFamily: 'serif',
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: AppConfig.textColorPrimary,
                             ),
@@ -349,18 +351,18 @@ class _MapScreenState extends State<MapScreen> {
                               const SizedBox(width: 2),
                               Text(
                                 _selectedItem.rating.toStringAsFixed(1),
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   _selectedType == 'wisata'
                                       ? (_selectedItem as WisataModel).kategori
-                                      : 'Rp ${(_selectedItem as HomestayModel).harga.toStringAsFixed(0)}',
+                                      : 'Rp ${(_selectedItem as HomestayModel).harga.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}/malam',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 11,
                                     color: AppConfig.textColorSecondary,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -378,13 +380,11 @@ class _MapScreenState extends State<MapScreen> {
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: _selectedType == 'wisata'
-                                  ? AppConfig.primaryColor
-                                  : Colors.blueAccent,
+                              backgroundColor: AppConfig.primaryColor,
                               foregroundColor: Colors.white,
                               elevation: 0,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                               minimumSize: const Size(double.infinity, 32),
                             ),
                             child: const Text('Detail Lengkap', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
@@ -397,46 +397,46 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
 
-          // Floating Action Buttons (Recenter & Zoom in/out)
+          // Custom FAB Control Buttons (Zoom, Recenter)
           Positioned(
-            right: 16,
+            right: 20,
             bottom: _selectedItem != null ? 220 : 24,
             child: Column(
               children: [
-                // Zoom In
                 FloatingActionButton(
                   heroTag: 'btn_zoom_in',
                   mini: true,
                   backgroundColor: Colors.white,
                   foregroundColor: AppConfig.primaryColor,
+                  elevation: 2,
                   onPressed: () {
                     final nextZoom = (_mapController.camera.zoom + 1).clamp(10.0, 18.0);
                     _mapController.move(_mapController.camera.center, nextZoom);
                   },
-                  child: const Icon(Icons.add),
+                  child: const Icon(Icons.add_rounded),
                 ),
                 const SizedBox(height: 8),
-                // Zoom Out
                 FloatingActionButton(
                   heroTag: 'btn_zoom_out',
                   mini: true,
                   backgroundColor: Colors.white,
                   foregroundColor: AppConfig.primaryColor,
+                  elevation: 2,
                   onPressed: () {
                     final nextZoom = (_mapController.camera.zoom - 1).clamp(10.0, 18.0);
                     _mapController.move(_mapController.camera.center, nextZoom);
                   },
-                  child: const Icon(Icons.remove),
+                  child: const Icon(Icons.remove_rounded),
                 ),
                 const SizedBox(height: 8),
-                // Recenter
                 FloatingActionButton(
                   heroTag: 'btn_recenter',
                   mini: true,
                   backgroundColor: Colors.white,
                   foregroundColor: AppConfig.primaryColor,
+                  elevation: 2,
                   onPressed: _recenterMap,
-                  child: const Icon(Icons.my_location),
+                  child: const Icon(Icons.my_location_rounded),
                 ),
               ],
             ),
@@ -448,7 +448,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Widget _buildFilterChip(String value, String label, IconData icon, {Color? color}) {
     final isSelected = _activeFilter == value;
-    final primary = color ?? AppConfig.primaryColor;
+    final activeColor = color ?? AppConfig.primaryColor;
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -458,24 +458,24 @@ class _MapScreenState extends State<MapScreen> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? primary : Colors.white,
+          color: isSelected ? activeColor : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? Colors.transparent : Colors.grey.shade300,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 6,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Row(
           children: [
-            Icon(icon, size: 16, color: isSelected ? Colors.white : AppConfig.textColorSecondary),
+            Icon(icon, size: 15, color: isSelected ? Colors.white : AppConfig.textColorSecondary),
             const SizedBox(width: 6),
             Text(
               label,

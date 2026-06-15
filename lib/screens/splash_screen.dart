@@ -66,32 +66,32 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         ),
         child: Stack(
           children: [
-            // Soft background lighting circles
+            // Glowing background elements
             Positioned(
-              top: -100,
-              right: -100,
+              top: -80,
+              right: -80,
               child: Container(
-                width: 300,
-                height: 300,
+                width: 280,
+                height: 280,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withOpacity(0.04),
                 ),
               ),
             ),
             Positioned(
-              bottom: -50,
-              left: -50,
+              bottom: -40,
+              left: -40,
               child: Container(
-                width: 250,
-                height: 250,
+                width: 240,
+                height: 240,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppConfig.accentColor.withOpacity(0.05),
+                  color: AppConfig.accentLight.withOpacity(0.04),
                 ),
               ),
             ),
-            // Central Content
+            // Center Brand Content
             Center(
               child: FadeTransition(
                 opacity: _fadeAnimation,
@@ -100,51 +100,52 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Beautiful Glowing Circle Icon
+                      // Circular Glowing Map Icon Container
                       Container(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(22),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.white,
                           boxShadow: [
                             BoxShadow(
-                              color: AppConfig.accentColor.withOpacity(0.4),
-                              blurRadius: 30,
-                              spreadRadius: 5,
+                              color: AppConfig.accentLight.withOpacity(0.3),
+                              blurRadius: 25,
+                              spreadRadius: 3,
                             ),
                           ],
                         ),
                         child: const Icon(
                           Icons.map_rounded,
                           color: AppConfig.primaryColor,
-                          size: 72,
+                          size: 64,
                         ),
                       ),
                       const SizedBox(height: 24),
-                      // App Name
+                      // Serif Brand Header
                       const Text(
                         'VISIT RESUN GIS',
                         style: TextStyle(
+                          fontFamily: 'serif',
                           color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
                           letterSpacing: 2.0,
                           shadows: [
                             Shadow(
                               color: Colors.black26,
-                              offset: Offset(0, 4),
-                              blurRadius: 8,
+                              offset: Offset(0, 3),
+                              blurRadius: 6,
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 8),
-                      // Slogan
+                      // Subtitle tag line
                       Text(
-                        'Keindahan Alam Desa Wisata Resun',
+                        'Jelajahi Pesona Alam Desa Resun',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.85),
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                           letterSpacing: 0.5,
                         ),
@@ -154,17 +155,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 ),
               ),
             ),
-            // Bottom Slogan/Version
+            // Bottom Loading Indicator & Info Footer
             Positioned(
-              bottom: 40,
+              bottom: 44,
               left: 0,
               right: 0,
               child: Center(
                 child: Column(
                   children: [
                     const SizedBox(
-                      width: 24,
-                      height: 24,
+                      width: 20,
+                      height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation(Colors.white),

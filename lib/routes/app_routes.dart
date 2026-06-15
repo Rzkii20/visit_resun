@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/splash_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
-import '../screens/home_screen.dart';
+import '../screens/main_shell.dart';
 import '../screens/detail_screen.dart';
 import '../screens/map_screen.dart';
 import '../screens/profile_screen.dart';
@@ -28,7 +28,7 @@ class AppRoutes {
         splash: (context) => const SplashScreen(),
         login: (context) => const LoginScreen(),
         register: (context) => const RegisterScreen(),
-        home: (context) => const HomeScreen(),
+        home: (context) => const MainNavigationShell(),
         detail: (context) => const DetailScreen(),
         map: (context) => const MapScreen(),
         profile: (context) => const ProfileScreen(),

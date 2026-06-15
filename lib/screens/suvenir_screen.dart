@@ -16,9 +16,20 @@ class SuvenirScreen extends StatelessWidget {
       backgroundColor: AppConfig.backgroundColor,
       appBar: AppBar(
         title: const Text(
-          'Oleh-Oleh & Suvenir Resun',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+          'Suvenir Resun',
+          style: TextStyle(
+            fontFamily: 'serif',
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
         backgroundColor: AppConfig.primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -34,18 +45,21 @@ class SuvenirScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.card_giftcard_rounded, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text('Belum ada produk suvenir yang tersedia.', style: TextStyle(color: AppConfig.textColorSecondary)),
+                  Icon(Icons.card_giftcard_rounded, size: 54, color: Colors.grey),
+                  SizedBox(height: 12),
+                  Text(
+                    'Belum ada produk suvenir yang tersedia.',
+                    style: TextStyle(color: AppConfig.textColorSecondary, fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
             )
           : GridView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: 14,
-                mainAxisSpacing: 14,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
                 childAspectRatio: 0.72,
               ),
               physics: const BouncingScrollPhysics(),
@@ -63,7 +77,7 @@ class SuvenirScreen extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.02),
@@ -73,7 +87,7 @@ class SuvenirScreen extends StatelessWidget {
                       ],
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -126,26 +140,30 @@ class SuvenirScreen extends StatelessWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
+                                    fontFamily: 'serif',
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     color: AppConfig.textColorPrimary,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 6),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      'Rp ${s.harga.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w800,
-                                        color: AppConfig.primaryColor,
+                                    Expanded(
+                                      child: Text(
+                                        'Rp ${s.harga.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w800,
+                                          color: AppConfig.primaryColor,
+                                        ),
                                       ),
                                     ),
                                     Row(
                                       children: [
                                         const Icon(Icons.star_rounded, color: AppConfig.accentColor, size: 14),
+                                        const SizedBox(width: 2),
                                         Text(
                                           s.rating.toStringAsFixed(1),
                                           style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),

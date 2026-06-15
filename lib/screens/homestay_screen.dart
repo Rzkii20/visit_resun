@@ -16,9 +16,20 @@ class HomestayScreen extends StatelessWidget {
       backgroundColor: AppConfig.backgroundColor,
       appBar: AppBar(
         title: const Text(
-          'Daftar Homestay Desa Resun',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+          'Homestay Resun',
+          style: TextStyle(
+            fontFamily: 'serif',
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
         backgroundColor: AppConfig.primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -34,14 +45,17 @@ class HomestayScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.villa_outlined, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text('Belum ada homestay yang tersedia.', style: TextStyle(color: AppConfig.textColorSecondary)),
+                  Icon(Icons.holiday_village_rounded, size: 54, color: Colors.grey),
+                  SizedBox(height: 12),
+                  Text(
+                    'Belum ada homestay yang tersedia.',
+                    style: TextStyle(color: AppConfig.textColorSecondary, fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
             )
           : ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               physics: const BouncingScrollPhysics(),
               itemCount: homestays.length,
               itemBuilder: (context, index) {
@@ -55,36 +69,36 @@ class HomestayScreen extends StatelessWidget {
                     );
                   },
                   child: Container(
-                    margin: const EdgeInsets.only(bottom: 16),
+                    margin: const EdgeInsets.only(bottom: 20),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          // Image with Price Badge
+                          // Top Image & Price overlay
                           Stack(
                             children: [
                               Image.network(
                                 h.gambar,
-                                height: 160,
+                                height: 170,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) => Container(
-                                  height: 160,
+                                  height: 170,
                                   color: AppConfig.primaryColor,
                                   child: const Center(
-                                    child: Icon(Icons.broken_image, color: Colors.white, size: 40),
+                                    child: Icon(Icons.broken_image, color: Colors.white, size: 36),
                                   ),
                                 ),
                               ),
@@ -94,14 +108,14 @@ class HomestayScreen extends StatelessWidget {
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: AppConfig.accentColor,
+                                    color: AppConfig.primaryColor,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
                                     'Rp ${h.harga.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}/malam',
                                     style: const TextStyle(
                                       color: Colors.white,
-                                      fontSize: 12,
+                                      fontSize: 11,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -109,7 +123,7 @@ class HomestayScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          // Content Info
+                          // Info content panel
                           Padding(
                             padding: const EdgeInsets.all(16),
                             child: Column(
@@ -122,26 +136,28 @@ class HomestayScreen extends StatelessWidget {
                                       child: Text(
                                         h.nama,
                                         style: const TextStyle(
-                                          fontSize: 16,
+                                          fontFamily: 'serif',
+                                          fontSize: 17,
                                           fontWeight: FontWeight.bold,
                                           color: AppConfig.textColorPrimary,
                                         ),
                                       ),
                                     ),
+                                    const SizedBox(width: 8),
                                     Row(
                                       children: [
                                         const Icon(Icons.star_rounded, color: AppConfig.accentColor, size: 18),
                                         const SizedBox(width: 2),
                                         Text(
                                           h.rating.toStringAsFixed(1),
-                                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: 12),
-                                // Facilities List (Chips)
+                                // Facilities listed in sage green chips
                                 Wrap(
                                   spacing: 6,
                                   runSpacing: 6,
@@ -149,15 +165,14 @@ class HomestayScreen extends StatelessWidget {
                                     return Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: AppConfig.primaryColor.withOpacity(0.05),
+                                        color: AppConfig.sageGreen,
                                         borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(color: AppConfig.primaryColor.withOpacity(0.1)),
                                       ),
                                       child: Text(
                                         f,
                                         style: const TextStyle(
                                           fontSize: 10,
-                                          fontWeight: FontWeight.w600,
+                                          fontWeight: FontWeight.bold,
                                           color: AppConfig.primaryColor,
                                         ),
                                       ),

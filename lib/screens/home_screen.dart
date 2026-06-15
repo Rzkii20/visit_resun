@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../config/app_config.dart';
 import '../providers/app_state_provider.dart';
 import '../routes/app_routes.dart';
-import '../widgets/category_button.dart';
+import '../screens/main_shell.dart';
 import '../widgets/item_card.dart';
 import '../models/wisata_model.dart';
 
@@ -15,7 +15,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
   String _searchQuery = '';
   final _searchController = TextEditingController();
 
@@ -33,12 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return 'Selamat Malam';
   }
 
-  void _onBottomNavTapped(int index) {
-    if (index == _currentIndex) return;
-    if (index == 1) {
-      Navigator.pushNamed(context, AppRoutes.map);
-    } else if (index == 2) {
-      Navigator.pushNamed(context, AppRoutes.profile);
+  void _changeTab(int index) {
+    final shellState = context.findAncestorStateOfType<MainNavigationShellState>();
+    if (shellState != null) {
+      shellState.setTabIndex(index);
     }
   }
 
@@ -54,17 +51,17 @@ class _HomeScreenState extends State<HomeScreen> {
     }).toList();
 
     final filteredTempatWisata = filteredWisata.where((w) => !w.isPaket).toList();
-    final filteredPaketWisata = filteredWisata.where((w) => w.isPaket).toList();
 
     return Scaffold(
       backgroundColor: AppConfig.backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Header
+              // Premium Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -76,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           _getGreeting(),
                           style: const TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
                             color: AppConfig.textColorSecondary,
                           ),
                         ),
@@ -86,7 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 22,
+                            fontFamily: 'serif',
+                            fontSize: 26,
                             fontWeight: FontWeight.bold,
                             color: AppConfig.textColorPrimary,
                           ),
@@ -95,63 +93,52 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // User Avatar & Role Badge
+                  // User Avatar
                   GestureDetector(
-                    onTap: () =>
-                        Navigator.pushNamed(context, AppRoutes.profile),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        CircleAvatar(
-                          radius: 26,
-                          backgroundColor: state.isAdmin
-                              ? Colors.amber.shade600
-                              : AppConfig.primaryColor,
-                          child: Text(
-                            state.isAdmin
-                                ? 'A'
-                                : (user != null && user.name.isNotEmpty)
-                                ? user.name[0].toUpperCase()
-                                : 'P',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
+                    onTap: () => _changeTab(4), // Go to Profile Tab
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppConfig.primaryColor.withOpacity(0.2),
+                          width: 2,
                         ),
-                        if (state.isAdmin)
-                          Positioned(
-                            bottom: -4,
-                            right: -4,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: AppConfig.accentColor,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.admin_panel_settings,
-                                color: Colors.white,
-                                size: 12,
-                              ),
-                            ),
-                          ),
-                      ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 24,
+                        backgroundColor: AppConfig.primaryColor,
+                        backgroundImage: (user != null && user.photo.isNotEmpty)
+                            ? NetworkImage(user.photo)
+                            : null,
+                        child: (user == null || user.photo.isEmpty)
+                            ? Text(
+                                state.isAdmin
+                                    ? 'A'
+                                    : (user != null && user.name.isNotEmpty)
+                                        ? user.name[0].toUpperCase()
+                                        : 'P',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : null,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
 
-              // Search Bar
+              // Custom Elegant Search Bar
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withOpacity(0.02),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -164,10 +151,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       _searchQuery = value;
                     });
                   },
+                  style: const TextStyle(color: AppConfig.textColorPrimary),
                   decoration: InputDecoration(
-                    hintText: 'Cari tempat wisata, kategori...',
+                    hintText: 'Cari tempat wisata resun...',
                     hintStyle: const TextStyle(
-                      color: Colors.grey,
+                      color: AppConfig.textColorSecondary,
                       fontSize: 14,
                     ),
                     prefixIcon: const Icon(
@@ -195,129 +183,24 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 28),
 
-              // Quick Categories Grid
-              const Text(
-                'Kategori Layanan',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppConfig.textColorPrimary,
-                  letterSpacing: 0.2,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CategoryButton(
-                        label: 'Tempat Wisata',
-                        icon: Icons.forest_rounded,
-                        color: AppConfig.primaryColor,
-                        onTap: () {
-                          setState(() {
-                            _searchQuery = '';
-                            _searchController.clear();
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Menampilkan tempat wisata Desa Resun.'),
-                              backgroundColor: AppConfig.primaryColor,
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                        },
-                      ),
-                      CategoryButton(
-                        label: 'Paket Wisata',
-                        icon: Icons.explore_rounded,
-                        color: Colors.teal.shade700,
-                        onTap: () {
-                          setState(() {
-                            _searchQuery = '';
-                            _searchController.clear();
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Menampilkan paket wisata Desa Resun.'),
-                              backgroundColor: AppConfig.primaryColor,
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                        },
-                      ),
-                      CategoryButton(
-                        label: 'Homestay',
-                        icon: Icons.holiday_village_rounded,
-                        color: Colors.blueAccent,
-                        onTap: () =>
-                            Navigator.pushNamed(context, AppRoutes.homestays),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CategoryButton(
-                        label: 'Suvenir',
-                        icon: Icons.card_giftcard_rounded,
-                        color: Colors.orangeAccent,
-                        onTap: () =>
-                            Navigator.pushNamed(context, AppRoutes.suvenirs),
-                      ),
-                      CategoryButton(
-                        label: 'Peta GIS',
-                        icon: Icons.pin_drop_rounded,
-                        color: Colors.redAccent,
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.map),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              // Search or Carousels Section
-              if (_searchQuery.isNotEmpty) ...[
-                // Search Results View
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Hasil Pencarian (${filteredWisata.length})',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppConfig.textColorPrimary,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                filteredWisata.isEmpty
-                    ? _buildEmptyState()
-                    : _buildCarousel(filteredWisata),
-              ] else ...[
-                // 1. Tempat Wisata Section
+              // Popular Destinations (If not searching)
+              if (_searchQuery.isEmpty) ...[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Tempat Wisata',
+                      'Destinasi Terpopuler',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontFamily: 'serif',
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppConfig.textColorPrimary,
-                        letterSpacing: 0.2,
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.map),
+                      onTap: () => _changeTab(1), // Go to Wisata Tab
                       child: const Text(
-                        'Lihat Peta',
+                        'Lihat Semua',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -331,44 +214,89 @@ class _HomeScreenState extends State<HomeScreen> {
                 filteredTempatWisata.isEmpty
                     ? _buildEmptyState()
                     : _buildCarousel(filteredTempatWisata),
-                
-                const SizedBox(height: 32),
-
-                // 2. Paket Wisata Section
+                const SizedBox(height: 28),
+              ] else ...[
+                // Search Results
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Paket Wisata Spesial',
-                      style: TextStyle(
-                        fontSize: 16,
+                    Text(
+                      'Hasil Pencarian (${filteredWisata.length})',
+                      style: const TextStyle(
+                        fontFamily: 'serif',
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppConfig.textColorPrimary,
-                        letterSpacing: 0.2,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                filteredPaketWisata.isEmpty
+                filteredWisata.isEmpty
                     ? _buildEmptyState()
-                    : _buildCarousel(filteredPaketWisata),
+                    : _buildCarousel(filteredWisata),
+                const SizedBox(height: 28),
               ],
-              const SizedBox(height: 32),
 
-              // Interactive Banner (Beautiful highlight)
+              // Jelajahi Grid (4 custom cards)
+              if (_searchQuery.isEmpty) ...[
+                const Text(
+                  'Jelajahi Resun',
+                  style: TextStyle(
+                    fontFamily: 'serif',
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppConfig.textColorPrimary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 1.45,
+                  children: [
+                    _buildGridCard(
+                      label: 'Peta Wisata',
+                      icon: Icons.map_rounded,
+                      bgColor: AppConfig.sageGreen,
+                      textColor: AppConfig.tagAlamText,
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.map),
+                    ),
+                    _buildGridCard(
+                      label: 'Homestay',
+                      icon: Icons.holiday_village_rounded,
+                      bgColor: AppConfig.sandBeige,
+                      textColor: AppConfig.textColorPrimary,
+                      onTap: () => _changeTab(2), // Homestay Tab
+                    ),
+                    _buildGridCard(
+                      label: 'Suvenir',
+                      icon: Icons.card_giftcard_rounded,
+                      bgColor: AppConfig.sandBeige,
+                      textColor: AppConfig.textColorPrimary,
+                      onTap: () => _changeTab(3), // Suvenir Tab
+                    ),
+                    _buildGridCard(
+                      label: 'Paket Wisata',
+                      icon: Icons.explore_rounded,
+                      bgColor: AppConfig.sageGreen,
+                      textColor: AppConfig.tagAlamText,
+                      onTap: () => _changeTab(1), // Wisata Tab
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 28),
+              ],
+
+              // Map GIS Banner
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: AppConfig.darkGlassGradient,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppConfig.primaryColor.withOpacity(0.2),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
                   children: [
@@ -377,8 +305,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Jelajahi Peta GIS',
+                            'Navigasi Peta GIS',
                             style: TextStyle(
+                              fontFamily: 'serif',
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -386,23 +315,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            'Temukan koordinat presisi air terjun & homestay Desa Resun secara langsung.',
+                            'Temukan koordinat presisi wisata alam secara langsung di lapangan.',
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.85),
                               fontSize: 12,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 14),
                           ElevatedButton(
-                            onPressed: () =>
-                                Navigator.pushNamed(context, AppRoutes.map),
+                            onPressed: () => Navigator.pushNamed(context, AppRoutes.map),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppConfig.accentColor,
-                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppConfig.primaryColor,
                               elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(10),
                               ),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             ),
                             child: const Text(
                               'Buka Peta',
@@ -417,50 +346,65 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(width: 16),
                     const Icon(
-                      Icons.explore_outlined,
+                      Icons.pin_drop_rounded,
                       color: Colors.white,
-                      size: 72,
+                      size: 64,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        selectedItemColor: AppConfig.primaryColor,
-        unselectedItemColor: Colors.grey.shade400,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        onTap: _onBottomNavTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_rounded),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map_rounded),
-            label: 'Peta GIS',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profil',
-          ),
-        ],
+    );
+  }
+
+  Widget _buildGridCard({
+    required String label,
+    required IconData icon,
+    required Color bgColor,
+    required Color textColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: Icon(icon, color: textColor, size: 24),
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                fontFamily: 'serif',
+                color: textColor,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildEmptyState() {
     return Container(
-      height: 180,
+      height: 160,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: const Center(
@@ -469,12 +413,12 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Icon(
               Icons.search_off_rounded,
-              size: 48,
+              size: 40,
               color: Colors.grey,
             ),
             SizedBox(height: 8),
             Text(
-              'Objek wisata tidak ditemukan',
+              'Destinasi tidak ditemukan',
               style: TextStyle(
                 color: AppConfig.textColorSecondary,
                 fontWeight: FontWeight.bold,
@@ -488,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCarousel(List<WisataModel> list) {
     return SizedBox(
-      height: 270,
+      height: 250,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -501,6 +445,8 @@ class _HomeScreenState extends State<HomeScreen> {
             tag: item.kategori,
             rating: item.rating,
             subtitle: item.jamBuka,
+            width: 200,
+            height: 250,
             onTap: () {
               Navigator.pushNamed(
                 context,

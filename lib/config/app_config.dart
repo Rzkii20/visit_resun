@@ -7,15 +7,24 @@ class AppConfig {
   static const bool useFirebase = true;
 
   // Premium UI Theme Colors
-  static const Color primaryColor = Color(0xFF004D40); // Deep Emerald Green
-  static const Color primaryLight = Color(0xFF00796B); // Emerald Green Light
-  static const Color primaryDark = Color(0xFF00251A); // Forest Green
-  static const Color accentColor = Color(0xFFFF8F00); // Golden Amber
-  static const Color accentLight = Color(0xFFFFC107); // Warm Amber
-  static const Color backgroundColor = Color(0xFFF5F7F8); // Premium Light Gray
+  static const Color primaryColor = Color(0xFF2E5C32); // Forest Green
+  static const Color primaryLight = Color(0xFF3E6D41); // Forest Green Light
+  static const Color primaryDark = Color(0xFF1E3C20); // Forest Green Dark
+  static const Color accentColor = Color(0xFFFFB300); // Golden Amber / Star Rating
+  static const Color accentLight = Color(0xFFFFD54F); // Warm Amber
+  static const Color backgroundColor = Color(0xFFF4F4F0); // Cream Background
   static const Color cardColor = Colors.white;
-  static const Color textColorPrimary = Color(0xFF212121);
-  static const Color textColorSecondary = Color(0xFF757575);
+  static const Color textColorPrimary = Color(0xFF1F201F); // Charcoal
+  static const Color textColorSecondary = Color(0xFF5E635E); // Medium Gray
+
+  // Figma Redesign Helper Colors
+  static const Color sageGreen = Color(0xFFE2E6E2);
+  static const Color sandBeige = Color(0xFFEDE7DF);
+  static const Color mintActive = Color(0xFFE1EBE1);
+  static const Color tagBudayaBg = Color(0xFFFDF1E2);
+  static const Color tagBudayaText = Color(0xFF8A5E38);
+  static const Color tagAlamBg = Color(0xFFE2EBE2);
+  static const Color tagAlamText = Color(0xFF2E5C32);
 
   // Gradient definitions
   static const Gradient primaryGradient = LinearGradient(
@@ -31,7 +40,7 @@ class AppConfig {
   );
 
   static const Gradient darkGlassGradient = LinearGradient(
-    colors: [Color(0x9900251A), Color(0x66004D40)],
+    colors: [Color(0x991E3C20), Color(0x662E5C32)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
