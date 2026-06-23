@@ -79,8 +79,8 @@ class _MapScreenState extends State<MapScreen> {
         markers.add(
           Marker(
             point: LatLng(w.lat, w.lng),
-            width: 48,
-            height: 48,
+            width: 120,
+            height: 75,
             child: GestureDetector(
               onTap: () {
                 setState(() {
@@ -89,28 +89,60 @@ class _MapScreenState extends State<MapScreen> {
                 });
                 _mapController.move(LatLng(w.lat, w.lng), 15.5);
               },
-              child: Stack(
-                alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: AppConfig.primaryColor.withOpacity(0.25),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.location_on_rounded,
+                        color: AppConfig.primaryColor,
+                        size: 38,
+                      ),
+                      const Positioned(
+                        top: 6,
+                        child: Icon(
+                          Icons.forest_rounded,
+                          color: Colors.white,
+                          size: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
                   Container(
-                    width: 36,
-                    height: 36,
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: AppConfig.primaryColor.withOpacity(0.25),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const Icon(
-                    Icons.location_on_rounded,
-                    color: AppConfig.primaryColor,
-                    size: 38,
-                  ),
-                  const Positioned(
-                    top: 6,
-                    child: Icon(
-                      Icons.forest_rounded,
                       color: Colors.white,
-                      size: 13,
+                      borderRadius: BorderRadius.circular(6),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                      border: Border.all(color: AppConfig.primaryColor.withOpacity(0.3), width: 0.5),
+                    ),
+                    child: Text(
+                      w.nama,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                        color: AppConfig.textColorPrimary,
+                        height: 1.2,
+                      ),
                     ),
                   ),
                 ],
@@ -127,8 +159,8 @@ class _MapScreenState extends State<MapScreen> {
         markers.add(
           Marker(
             point: LatLng(h.lat, h.lng),
-            width: 48,
-            height: 48,
+            width: 120,
+            height: 75,
             child: GestureDetector(
               onTap: () {
                 setState(() {
@@ -137,28 +169,60 @@ class _MapScreenState extends State<MapScreen> {
                 });
                 _mapController.move(LatLng(h.lat, h.lng), 15.5);
               },
-              child: Stack(
-                alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.teal.withOpacity(0.25),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.location_on_rounded,
+                        color: Colors.teal,
+                        size: 38,
+                      ),
+                      const Positioned(
+                        top: 6,
+                        child: Icon(
+                          Icons.holiday_village_rounded,
+                          color: Colors.white,
+                          size: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
                   Container(
-                    width: 36,
-                    height: 36,
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Colors.teal.withOpacity(0.25),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const Icon(
-                    Icons.location_on_rounded,
-                    color: Colors.teal,
-                    size: 38,
-                  ),
-                  const Positioned(
-                    top: 6,
-                    child: Icon(
-                      Icons.holiday_village_rounded,
                       color: Colors.white,
-                      size: 13,
+                      borderRadius: BorderRadius.circular(6),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                      border: Border.all(color: Colors.teal.withOpacity(0.3), width: 0.5),
+                    ),
+                    child: Text(
+                      h.nama,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                        color: AppConfig.textColorPrimary,
+                        height: 1.2,
+                      ),
                     ),
                   ),
                 ],

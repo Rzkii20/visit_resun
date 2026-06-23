@@ -257,29 +257,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildGridCard(
                       label: 'Peta Wisata',
                       icon: Icons.map_rounded,
-                      bgColor: AppConfig.sageGreen,
-                      textColor: AppConfig.tagAlamText,
+                      imagePath: 'assets/images/air_terjun_resun.png',
                       onTap: () => Navigator.pushNamed(context, AppRoutes.map),
                     ),
                     _buildGridCard(
                       label: 'Homestay',
                       icon: Icons.holiday_village_rounded,
-                      bgColor: AppConfig.sandBeige,
-                      textColor: AppConfig.textColorPrimary,
+                      imagePath: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=600',
                       onTap: () => _changeTab(2), // Homestay Tab
                     ),
                     _buildGridCard(
                       label: 'Suvenir',
                       icon: Icons.card_giftcard_rounded,
-                      bgColor: AppConfig.sandBeige,
-                      textColor: AppConfig.textColorPrimary,
+                      imagePath: 'https://images.unsplash.com/photo-1586040140378-b5634cb4c8fc?q=80&w=600',
                       onTap: () => _changeTab(3), // Suvenir Tab
                     ),
                     _buildGridCard(
                       label: 'Paket Wisata',
                       icon: Icons.explore_rounded,
-                      bgColor: AppConfig.sageGreen,
-                      textColor: AppConfig.tagAlamText,
+                      imagePath: 'assets/images/wisata_mangrove_resun.png',
                       onTap: () => _changeTab(1), // Wisata Tab
                     ),
                   ],
@@ -360,36 +356,87 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildGridCard({
     required String label,
     required IconData icon,
-    required Color bgColor,
-    required Color textColor,
+    required String imagePath,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: bgColor,
           borderRadius: BorderRadius.circular(16),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: Icon(icon, color: textColor, size: 24),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: 'serif',
-                color: textColor,
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-              ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
           ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Background image
+              AppImage(
+                imagePath,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: AppConfig.sageGreen,
+                ),
+              ),
+              // Dark gradient overlay for readability
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withOpacity(0.1),
+                      Colors.black.withOpacity(0.55),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+              ),
+              // Icon + Label
+              Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.25),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(icon, color: Colors.white, size: 20),
+                      ),
+                    ),
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontFamily: 'serif',
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black54,
+                            blurRadius: 6,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
